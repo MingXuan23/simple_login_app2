@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simple_login_app2/page/homepage.dart';
 import 'package:simple_login_app2/page/loginpage.dart';
 
 void main() {
@@ -16,7 +15,6 @@ class MyApp extends StatelessWidget {
       title: 'Simple Login App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
