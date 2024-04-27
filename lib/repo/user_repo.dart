@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_login_app2/model/user.dart';
 
-final url = "http://10.131.73.214:5000/api/";
+final url = "http://10.131.73.40:5000/api/User/";
 Future<List<User>> getUserList() async{
   final String userjson = await rootBundle.loadString('lib/assets/user.json');
   final  userdata = json.decode(userjson)['users'] as List;
@@ -13,9 +13,11 @@ Future<List<User>> getUserList() async{
   return users;
 }
 
-Future<int> loginViaApi(String username,String password) async{
+Future<String> loginViaApi(String username,String password) async{
   try{
-    final login_url = "${url}User/login" ;
+    //final login_url = "${url}User/login" ;
+    final login_url = "${url}login" ;
+
     final request = await HttpClient().postUrl(Uri.parse(login_url));
 
     //await HttpClient().getUrl(Uri.parse(login_url));
@@ -26,53 +28,88 @@ Future<int> loginViaApi(String username,String password) async{
 
     final response = await request.close();
     if(response.statusCode ==HttpStatus.ok){
-      return int.parse(await response.transform(utf8.decoder).join());
-    }
+      final token =await response.transform(utf8.decoder).join() ;
+      saveUserData(token);
+
+      return token;
+    }   
     else{
-      return 0;
+      return "";
     }
   }catch(ex){
-      return 0;
+      return "";
   }
 }
 
+Future<dynamic> ManagerGetUsers() async{
+  try{
+    //final login_url = "${url}User/login" ;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if(token == null){
+      throw Exception("invalid token");
+    }
 
-Future<User> login(String username,String password) async{
-  final userList = await getUserList();
-  User user = userList.firstWhere((user) => user.username == username 
-  && user.password == password, orElse: ()=> User.nullUser());
+    final get_user_url = "${url}getUser" ;
 
-if(!isNullUser(user)){
-  saveUserData(user);
+    final request = await HttpClient().postUrl(Uri.parse(get_user_url));
+
+    //await HttpClient().getUrl(Uri.parse(login_url));
+    //request.headers.set('Content-Type', 'application/json;charset=UTF-8');
+    request.headers.set('token', token);
+
+    //final requestBody = json.encode({'Username': username ,'Password':password});
+    //request.write(requestBody);
+
+    final response = await request.close();
+    if(response.statusCode ==HttpStatus.ok){
+      final result =await response.transform(utf8.decoder).join() ;
+      final list = json.decode(result);
+      return list;
+    }   
+    else{
+      return "";
+    }
+  }catch(ex){
+      return "";
+  }
 }
-  return user;
+
+// Future<User> login(String username,String password) async{
+//   final userList = await getUserList();
+//   User user = userList.firstWhere((user) => user.username == username 
+//   && user.password == password, orElse: ()=> User.nullUser());
+
+// if(!isNullUser(user)){
+//   saveUserData(user);
+// }
+//   return user;
   
-}
+// }
 
-bool isNullUser(User user){
-  return (user.username == "" && user.password == "");
-}
+// bool isNullUser(User user){
+//   return (user.username == "" && user.password == "");
+// }
 //flutter pub add shared_preferences
-Future<void> saveUserData(User user) async{
+Future<void> saveUserData(String token) async{
   final prefs = await SharedPreferences.getInstance(); 
 
-  final userjson = json.encode(user.toJson());
-  prefs.setString('user', userjson);
+  final tokenJson = token;
+  prefs.setString('token', tokenJson);
 }
 
 Future<int> checkSavedUserData() async{
   final prefs = await SharedPreferences.getInstance();
 
 //for first time user
-  final user_in_pref =prefs.getString('user');
-  if(user_in_pref == null){
+  final token_in_pref =prefs.getString('token');
+  if(token_in_pref == null){
     return 0;
   }
 
-  final userjson = json.decode(user_in_pref);
-  final user =  User.fromJson(userjson);
+  final token = token_in_pref;
 
-  if(isNullUser(user)){
+  if(token== ""){
      return 0;
   }
   else{

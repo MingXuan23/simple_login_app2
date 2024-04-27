@@ -3,6 +3,7 @@ import 'package:simple_login_app2/model/user.dart';
 import 'package:simple_login_app2/page/homepage.dart';
 import 'package:simple_login_app2/repo/user_repo.dart';
 import 'package:simple_login_app2/widget/loginText.dart';
+import 'package:simple_login_app2/widget/userTile.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,9 +13,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  @override
+ 
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  String username = "";
+  List<dynamic> userlist = [];
 
   @override
   void initState() {
@@ -26,21 +30,27 @@ class _LoginPageState extends State<LoginPage> {
     int userexist = await checkSavedUserData();
     if (userexist == 1) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => MyHomePage(title: "Hello AWord")));
+          builder: (context) => MyHomePage(title: "Hello AWord",userlist: userlist,)));
     }
   }
 
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('heelo'),
+         backgroundColor: Theme.of(context).canvasColor,
+      ),
       body: SingleChildScrollView(
-          child: Padding(
+          child: Padding(   
         padding: EdgeInsets.all(50),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'LOGIN',
+                        
+             Text(
+              username,
               style: TextStyle(
                   fontWeight: FontWeight.bold, fontSize: 40, letterSpacing: 20),
             ),
@@ -58,14 +68,24 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   final result = await loginViaApi(
                       _usernameController.text, _passwordController.text);
-                  if (result != 0) {
+                  if (result != "") {
+                    userlist = await ManagerGetUsers();
+                    setState(()  {
+                        username =  _usernameController.text ;
+                      userlist =userlist;
+                  });
+
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            MyHomePage(title: "Hello AWord")));
+                            MyHomePage(title: "Hello AWord",userlist: userlist,)));
                   } else {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text("Invalid User")));
                   }
+
+                
+                  
+                 
                   // final result = await login(
                   //     _usernameController.text, _passwordController.text);
 
