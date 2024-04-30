@@ -117,3 +117,9 @@ Future<int> checkSavedUserData() async{
   }
   
 }
+
+Future<void> user_logout() async{
+   final prefs = await SharedPreferences.getInstance();
+   prefs.remove('token');
+
+}

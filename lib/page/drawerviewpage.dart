@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login_app2/page/homepage.dart';
+import 'package:simple_login_app2/page/loginpage.dart';
 import 'package:simple_login_app2/page/registerPage.dart';
+import 'package:simple_login_app2/repo/user_repo.dart';
 
 class DrawerViewPage extends StatefulWidget {
   const DrawerViewPage({super.key});
@@ -43,6 +45,17 @@ class _DrawerViewPageState extends State<DrawerViewPage> {
                 setState(() {
                   content = RegisterPage();
                 });
+
+              },
+            ),
+             ListTile(
+              title: Text('Log out'),
+              onTap: () async {
+                Navigator.pop(context);
+                await user_logout();
+                Navigator.pushReplacement(context, MaterialPageRoute(
+                  builder: (context) => LoginPage()
+                ));
 
               },
             ),

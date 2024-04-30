@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login_app2/model/user.dart';
+import 'package:simple_login_app2/page/drawerviewpage.dart';
 import 'package:simple_login_app2/page/homepage.dart';
 import 'package:simple_login_app2/repo/user_repo.dart';
 import 'package:simple_login_app2/widget/alertMessage.dart';
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     int userexist = await checkSavedUserData();
     if (userexist == 1) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => MyHomePage(title: "Hello AWord")));
+          builder: (context) => DrawerViewPage()));
     }
   }
 
@@ -83,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            MyHomePage(title: "Hello AWord")));
+                            DrawerViewPage()));
                   } else {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text("Invalid User")));
