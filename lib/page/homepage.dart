@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:simple_login_app2/model/role.dart';
 import 'package:simple_login_app2/repo/role_repo.dart';
 import 'package:simple_login_app2/repo/user_repo.dart';
+import 'package:simple_login_app2/widget/alertMessage.dart';
 import 'package:simple_login_app2/widget/userTile.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title, required this.userlist});
+  const MyHomePage({super.key, required this.title});
 
-  final List<dynamic> userlist;
   final String title;
 
   @override
@@ -103,6 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     pickerSelectedValue = selectedRole.id.toString();
                      resultUserList = userlist.where((x)=>x["role_id"] == selectedRole.id).toList();
                   });
+
+                  //showAlert(context,selectedRole.role + " was selected!");
+                  datepicker(context);
                 },
                 items: roleItem.map<DropdownMenuItem<String>>((Role item) {
                   return DropdownMenuItem<String>(

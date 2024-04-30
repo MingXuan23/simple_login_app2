@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_login_app2/model/user.dart';
 import 'package:simple_login_app2/page/homepage.dart';
 import 'package:simple_login_app2/repo/user_repo.dart';
+import 'package:simple_login_app2/widget/alertMessage.dart';
 import 'package:simple_login_app2/widget/loginText.dart';
 import 'package:simple_login_app2/widget/userTile.dart';
 
@@ -30,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
     int userexist = await checkSavedUserData();
     if (userexist == 1) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => MyHomePage(title: "Hello AWord",userlist: userlist,)));
+          builder: (context) => MyHomePage(title: "Hello AWord")));
     }
   }
 
@@ -66,6 +67,11 @@ class _LoginPageState extends State<LoginPage> {
             ),
             ElevatedButton(
                 onPressed: () async {
+
+                  if(_usernameController.text.isEmpty || _passwordController.text.isEmpty){
+                    showAlert(context, "Please enter the username and password");
+                    return;
+                  }
                   final result = await loginViaApi(
                       _usernameController.text, _passwordController.text);
                   if (result != "") {
@@ -77,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            MyHomePage(title: "Hello AWord",userlist: userlist,)));
+                            MyHomePage(title: "Hello AWord")));
                   } else {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text("Invalid User")));
