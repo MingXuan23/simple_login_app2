@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class UserTile extends StatelessWidget {
-  const UserTile({super.key, required this.username, required this.image, required this.role_id});
+  const UserTile({super.key, required this.username, required this.image, required this.role});
   final String username;
   final String image;
-  final int role_id;
+  //final int role_id;
+  final String role ; 
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class UserTile extends StatelessWidget {
               ),
               SizedBox(height: 8.0), // Add spacing between name and role
               Text(
-                role_id.toString(),
+                role.toString(),
                 style: TextStyle(
                   fontSize: 16.0,
                   color: Colors.grey,

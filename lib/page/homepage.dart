@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:simple_login_app2/model/role.dart';
+import 'package:simple_login_app2/repo/role_repo.dart';
+import 'package:simple_login_app2/repo/user_repo.dart';
 import 'package:simple_login_app2/widget/userTile.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -13,7 +16,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  List<Role> roleItem = [Role(0, "Select The Rule")];
+  String? pickerSelectedValue;
   List<dynamic> userlist =[];
+  List<dynamic> resultUserList = [];
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -29,11 +35,30 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //getManagerUserList();
+    getUserRoles();
+    
+    getManagerUserList();
+    
+
+    
   }
 
-  List<dynamic> getManagerUserList(){
-    return [];
+  Future<List<dynamic>> getUserRoles() async{
+    final list = await getRoles() as List<Role>;
+
+    setState(() {
+      roleItem = list;
+    });
+
+    return list;
+  }
+  Future<List<dynamic>> getManagerUserList() async{
+     userlist = await ManagerGetUsers();
+      setState(()  {
+        userlist =userlist;
+    });
+
+    return userlist;
     //the second way, please try to implement
   }
   @override
@@ -60,17 +85,43 @@ class _MyHomePageState extends State<MyHomePage> {
          
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            DropdownButton<String>(
+                hint: Text('Select the role'),
+                value: pickerSelectedValue??roleItem[0].id.toString(), // Set initial value if available
+                onChanged: (String? newValue) {
+                  // Handle item selection
+                  if(newValue ==null){
+                    return;
+                  }
+
+                  Role? selectedRole = roleItem.where((role)=> role.id.toString() == newValue).toList().firstOrNull;
+                  if(selectedRole ==null){
+                    return;
+                  }
+                 // resultUserList = userlist.where((x)=>x["role_id"] == selectedRole.id).toList();
+                  setState(() {
+                    pickerSelectedValue = selectedRole.id.toString();
+                     resultUserList = userlist.where((x)=>x["role_id"] == selectedRole.id).toList();
+                  });
+                },
+                items: roleItem.map<DropdownMenuItem<String>>((Role item) {
+                  return DropdownMenuItem<String>(
+                    value: item.id.toString(),
+                    child: Text(item.role),
+                  );
+                }).toList(),
+            ),
             Container(
               height: 400, // Set the desired height here
               child: ListView.builder(
-                itemCount: widget.userlist.length,
+                itemCount: resultUserList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return UserTile(
                     username:
-                        widget.userlist[index]['name'], // Replace with actual username from your list
+                        resultUserList[index]['name'], // Replace with actual username from your list
                     image:
                         "1.png", // Replace with actual image path from your list
-                    role_id: 1, // Replace with actual role id from your list
+                    role: roleItem.firstWhere((role) => role.id == resultUserList[index]['role_id']).role??"", // Replace with actual role id from your list
                   );
                 },
               ),
